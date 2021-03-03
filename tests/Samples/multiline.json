@@ -1,0 +1,3 @@
+{
+    "%{randomitem(Hello,Hi)}%": "%{randomitem(World,Universe)}%"
+}

@@ -1,0 +1,6 @@
+emerg
+alert
+crit
+error
+warn
+notice

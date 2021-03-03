@@ -1,0 +1,132 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release semantic version number'
+        required: true
+      prerelease:
+        description: 'Is the release a pre-release'
+        required: true
+        default: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Publish binary
+      run: dotnet publish ./src/Lignator.csproj -r linux-x64 -p:PublishSingleFile=true --self-contained true -p:InformationalVersion="${{ github.event.inputs.version }}" -c Release -o test
+    - name: Validate binary version
+      run: |
+          lignatorversion=$(./test/lignator --version)
+          if [[ $lignatorversion != "${{ github.event.inputs.version }}" ]];
+          then
+            echo "Compiled binary version $lignatorversion should be ${{ github.event.inputs.version }}"; exit 1
+          fi
+          exit 0
+    - name: Publish docker
+      run: docker build --build-arg CODE_VERSION=${{ github.event.inputs.version }}  . -t temp/lignator:${{ github.event.inputs.version }}
+      working-directory: ./src
+    - name: Validate docker version
+      working-directory: ./src
+      run: |
+          lignatorversion=$(docker run temp/lignator:${{ github.event.inputs.version }} --version)
+          if [[ $lignatorversion != "${{ github.event.inputs.version }}" ]];
+          then
+            echo "Docker container version $lignatorversion should be ${{ github.event.inputs.version }}"; exit 1
+          fi
+          exit 0
+
+  release:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.event.inputs.version }}
+        release_name: Release ${{ github.event.inputs.version }}
+        body: |
+          # lignator v${{ github.event.inputs.version }}
+
+          ## Linux
+
+          > To compile locally outside of docker you will need the .NET5 sdk installed from [here](https://docs.microsoft.com/en-gb/dotnet/core/install/linux)
+
+          To run it locally you can manually download the asset from this release or run the following:
+
+          ```
+          wget https://github.com/microsoft/lignator/releases/archive/v${{ github.event.inputs.version }}.tar.gz \
+            && tar xvzf lignator-v${{ github.event.inputs.version }}.tar.gz \
+            && cd lignator-v${{ github.event.inputs.version }}/src \
+            && sudo dotnet publish -r linux-x64 -c Release -o /usr/local/bin/ -p:PublishSingleFile=true --self-contained true -p:InformationalVersion=${{ github.event.inputs.version }} \
+            && lignator --version
+          ```
+
+          If you have cloned the repo locally then navigate to the root of the git repo and run the follow:
+
+          ```
+          git fetch --all --tags \
+            && git checkout tags/v${{ github.event.inputs.version }} -b v${{ github.event.inputs.version }} \
+            && cd src \
+            && sudo dotnet publish -r linux-x64 -c Release -o /usr/local/bin/ -p:PublishSingleFile=true --self-contained true -p:InformationalVersion=${{ github.event.inputs.version }} \
+            && lignator --version
+          ```
+
+          ## Docker
+
+          > To build the docker container you will need to be running docker locally, so be sure check how to install this based on your environment.
+
+          To run it locally you can manually download the asset from this release or run the following, changing container name and repository as needed:
+
+          ```
+          wget https://github.com/microsoft/lignator/releases/archive/v${{ github.event.inputs.version }}.tar.gz \
+            && tar xvzf lignator-v${{ github.event.inputs.version }}.tar.gz \
+            && cd lignator-v${{ github.event.inputs.version }}/src \
+            && docker build --build-arg CODE_VERSION=${{ github.event.inputs.version }} . -t lignator:${{ github.event.inputs.version }} \
+            && docker run lignator:${{ github.event.inputs.version }} --version
+          ```
+
+          If you have cloned the repo locally then navigate to the root of the git repo and run the follow, changing container name and repository as needed:
+
+          ```
+          git fetch --all --tags \
+            && git checkout tags/v${{ github.event.inputs.version }} -b v${{ github.event.inputs.version }} \
+            && cd src \
+            && docker build --build-arg CODE_VERSION=${{ github.event.inputs.version }} . -t lignator:${{ github.event.inputs.version }} \
+            && docker run lignator:${{ github.event.inputs.version }} --version
+          ```
+
+          # Changes
+
+        draft: false
+        prerelease: ${{ github.event.inputs.prerelease }}

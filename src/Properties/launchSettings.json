@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "lignator": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

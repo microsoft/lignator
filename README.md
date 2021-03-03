@@ -25,7 +25,7 @@
 ------------------------------------------------------
 ```
 
-![Build and Tests](https://github.com/JimPaine/lumberjack/workflows/Build%20and%20Tests/badge.svg) ![Release](https://github.com/JimPaine/lumberjack/workflows/Release/badge.svg)
+![Build and Tests](https://github.com/microsoft/lignator/workflows/Build%20and%20Tests/badge.svg) ![Release](https://github.com/microsoft/lignator/workflows/Release/badge.svg)
 
 ## Log generation made simple
 

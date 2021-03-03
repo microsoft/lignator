@@ -44,7 +44,7 @@ lignator (Latin for lumberjack) is a cli tool to generate structured but randomi
 
 # 1. Getting Started
 
-Head over to [releases](https://github.com/JimPaine/lumberjack/releases) and grab the latest version, all the details on how to install it will be in the release notes.
+Head over to [releases](https://github.com/microsoft/lignator/releases) and grab the latest version, all the details on how to install it will be in the release notes.
 
 # Contributing
 

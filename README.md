@@ -31,7 +31,7 @@
 
 lignator (Latin for lumberjack) is a cli tool to generate structured but randomized outputs. It was originally created for generating event logs to help test Splunk clusters at scale, but as it has evolved we are seeing it being used to generate other randomized structures such as SQL queries, CSV or json. Make sure you check out the examples for some ideas and feel free to contribute some new ones.
 
-![lignator demo](./images/lignator-demo.gif)
+![lignator demo](/images/lignator-demo.gif)
 
 - [Getting started](#1-getting-started)
 - [How it works](/docs/2.how_it_works.md)

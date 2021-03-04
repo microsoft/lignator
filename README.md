@@ -33,16 +33,16 @@ lignator (Latin for lumberjack) is a cli tool to generate structured but randomi
 
 ![lignator demo](/images/lignator-demo.gif)
 
-- [Getting started](#1-getting-started)
-- [How it works](/docs/2.how_it_works.md)
-- [Inputs](/docs/3.input.md)
-- [Output](/docs/4.output.md)
-- [Options](/docs/5.options.md)
-- [Tokens](/docs/6.tokens.md)
-- [Considerations](/docs/7.considerations.md)
+- [Getting started](#getting-started)
+- [How it works](/docs/how_it_works.md)
+- [Inputs](/docs/input.md)
+- [Output](/docs/output.md)
+- [Options](/docs/options.md)
+- [Tokens](/docs/tokens.md)
+- [Considerations](/docs/considerations.md)
 
 
-# 1. Getting Started
+# Getting Started
 
 Head over to [releases](https://github.com/microsoft/lignator/releases) and grab the latest version, all the details on how to install it will be in the release notes.
 

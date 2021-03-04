@@ -1,4 +1,4 @@
-# 2. How it works
+# How it works
 
 lignator works by taking a template of how a log should be generated, then parsing all the tokens with their possible values and storing them in memroy during start up. It can then start to output the actual logs. The core benefit of this over other solutions is that it greatly reduces the compute and IO overhead during log generation, which allows us to generate a consistent and steady rate of logs for long periods of time.
 
@@ -24,4 +24,4 @@ Template
 [%{utcnow()}%] - [%{randomitem(INFO ,WARN ,ERROR)}%] - I am a log for request with id: %{uuid}%
 ```
 
-[>> Next - Inputs](/docs/3.input.md)
+[>> Next - Inputs](/docs/input.md)

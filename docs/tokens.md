@@ -1,10 +1,10 @@
-# 6. Tokens
+# Tokens
 
-- [uuid](#61-uuid)
-- [randomitem](#62-randomitem)
-- [randombetween](#63-randombetween)
-- [linefromfile](#64-linefromfile)
-- [utcnow](#65utcnow)
+- [uuid](#uuid)
+- [randomitem](#randomitem)
+- [randombetween](#randombetween)
+- [linefromfile](#linefromfile)
+- [utcnow](#utcnow)
 
 The current tokens available are shown here:
 
@@ -17,21 +17,21 @@ The current tokens available are shown here:
 | utcnow        | Generate timestamp using UTC                 | lignator -t "timestamp: %{utcnow()}%"                              |
 | variable      | Uses the result of a already transformed template so you can re use it per output | lignator -V myID=%{uuid}% -t "ID:%{variable(myID)}% the same ID: %{variable(myID)}%" |
 
-## 6.1 uuid
+## uuid
 
 The uuid token is used to create a new unique id.
 
-![uuid generation example](./images/lignator-uuid.gif)
+![uuid generation example](/images/lignator-uuid.gif)
 
-## 6.2 randomitem
+## randomitem
 
 The randonitem token can take a group of values inline, so it's good for when you are only working with a handful of items. Here is an example of generating logs with different log levels:
 
 > Note in this example the space between some of the items is to ensure padding of the values in the log.
 
-![randomitem example](./images/lignator-randomitem.gif)
+![randomitem example](/images/lignator-randomitem.gif)
 
-## 6.3 randombetween
+## randombetween
 
 The randombetween token allows lignator to generate a random number between and inclusive of the provided numbers. So in the example below it will create a number that is greater than 0 and less than 11.
 
@@ -39,15 +39,15 @@ The randombetween token allows lignator to generate a random number between and 
 $ lignator -t %{randombetween(1, 10)}%
 ```
 
-![randombetween example](./images/lignator-randombetween.gif)
+![randombetween example](/images/lignator-randombetween.gif)
 
-## 6.4 linefromfile
+## linefromfile
 
 The linefromfile token will let lignator pick at random a line from the supplied file. This is helpful when you have so many items that the randomitem becomes challegening to maintain or consume. A great example could be a file filled with browser agents.
 
-![linefromfile example](./images/lignator-linefromfile.gif)
+![linefromfile example](/images/lignator-linefromfile.gif)
 
-## 6.5 utcnow
+## utcnow
 
 The utcnow token allows lignator to generate a range of different timestamps based on the current UTC date and time. Under the hood, it currently uses the .NET implementation of DateTime so you can use the details [here](https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings) for examples of all the available format strings.
 
@@ -66,9 +66,9 @@ $ lignator -t "%{utcnow(yyyy-MM-dd'T'HH:mm:ss.ffffff'Z')}%"
 ```
 2021-02-10T04:32:50.540265Z
 
-![utcnow example](./images/lignator-utcnow.gif)
+![utcnow example](/images/lignator-utcnow.gif)
 
-## 6.6 variable
+## variable
 
 The variable token allows lignator to evaluate a specific template and store the result to re use multiple times in a single log or output, this could be handy for when you want to output the same value in something like a firewall log or include the same IP in the url and host values of a http request header.
 
@@ -125,4 +125,4 @@ Generates
 }
 ```
 
-[>> Next - Considerations](/docs/7.considerations.md)
+[>> Next - Considerations](/docs/considerations.md)

@@ -1,4 +1,4 @@
-# 5. Options
+# Options
 
 These are the different values that can be configured for when lignator is run. The only manditory item is the template which can be inline, a path to a file and a path to a directory. The rest have default values so while likely to be changed they don't have to be for small test runs.
 
@@ -32,4 +32,4 @@ Here are the details of the cli arguments, aliases and their matching environmen
 | --help       | -h    |                    | No       |                   |         | Shows the help text for the tool                                                         |
 | --no-banner  |       | lignator_no_banner | No       | False             | Boolean | Use this argument to not show the ascii banner |
 
-[>> Next - Tokens](/docs/6.tokens.md)
+[>> Next - Tokens](/docs/tokens.md)

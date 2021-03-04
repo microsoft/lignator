@@ -85,9 +85,9 @@ jobs:
           To run it locally you can manually download the asset from this release or run the following:
 
           ```
-          wget https://github.com/microsoft/lignator/releases/archive/v${{ github.event.inputs.version }}.tar.gz \
-            && tar xvzf lignator-v${{ github.event.inputs.version }}.tar.gz \
-            && cd lignator-v${{ github.event.inputs.version }}/src \
+          wget https://github.com/microsoft/lignator/archive/v${{ github.event.inputs.version }}.tar.gz \
+            && tar xvzf v${{ github.event.inputs.version }}.tar.gz \
+            && cd ./lignator-${{ github.event.inputs.version }}/src \
             && sudo dotnet publish -r linux-x64 -c Release -o /usr/local/bin/ -p:PublishSingleFile=true --self-contained true -p:InformationalVersion=${{ github.event.inputs.version }} \
             && lignator --version
           ```
@@ -109,9 +109,9 @@ jobs:
           To run it locally you can manually download the asset from this release or run the following, changing container name and repository as needed:
 
           ```
-          wget https://github.com/microsoft/lignator/releases/archive/v${{ github.event.inputs.version }}.tar.gz \
-            && tar xvzf lignator-v${{ github.event.inputs.version }}.tar.gz \
-            && cd lignator-v${{ github.event.inputs.version }}/src \
+          wget https://github.com/microsoft/lignator/archive/v${{ github.event.inputs.version }}.tar.gz \
+            && tar xvzf v${{ github.event.inputs.version }}.tar.gz \
+            && cd ./lignator-${{ github.event.inputs.version }}/src \
             && docker build --build-arg CODE_VERSION=${{ github.event.inputs.version }} . -t lignator:${{ github.event.inputs.version }} \
             && docker run lignator:${{ github.event.inputs.version }} --version
           ```

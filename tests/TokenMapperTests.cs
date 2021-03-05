@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using Lignator.Interfaces;
 using Lignator.Models;
 using Microsoft.Extensions.Logging;

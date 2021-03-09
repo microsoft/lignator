@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Threading.Tasks;
 using Lignator.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace Lignator
 {
@@ -16,19 +15,17 @@ namespace Lignator
 
         private bool disposing = false;
         private bool disposed = false;
-        private readonly ILogger<FileSink> logger;
+        private readonly string path;
+        private readonly bool clean;
 
-        public FileSink(ILogger<FileSink> logger)
+        public FileSink() {}
+        private FileSink(string path, bool multiline = false, bool clean = false)
         {
-            this.logger = logger;
-        }
-
-        public IFileSink Start(string path, bool multiline = false)
-        {
+            this.path = path;
+            this.clean = clean;
             string directory = Path.GetDirectoryName(path);
             if (!Directory.Exists(directory))
             {
-                this.logger.LogDebug($"Directory did not exist, creating directory {directory}");
                 Directory.CreateDirectory(directory);
             }
 
@@ -46,20 +43,20 @@ namespace Lignator
                             await task;
                         }
                     }
+                    await writer.FlushAsync();
                 }
             });
-            return this;
+        }
+
+        public IFileSink Start(string path, bool multiline = false, bool clean = false)
+        {
+            return new FileSink(path, multiline, clean);
         }
 
         public void Sink(string content)
         {
             if (this.disposing) return;
             this.queue.Enqueue(content);
-        }
-
-        public void DeleteFile(string path)
-        {
-            File.Delete(path);
         }
 
         public void Dispose()
@@ -69,6 +66,7 @@ namespace Lignator
             this.disposed = true;
             Task.WaitAll(new Task[] { this.sinker });
             this.sinker.Dispose();
+            if (this.clean) File.Delete(this.path);
         }
     }
 }

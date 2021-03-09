@@ -55,7 +55,6 @@ namespace Lignator
                 List<Task> tasks = new List<Task>();
                 for (int n = 0; n < options.Runs; n++)
                 {
-                    ConcurrentBag<string> fileLocations = new ConcurrentBag<string>();
                     IEnumerable<IGrouping<string, Extraction>> grouping = extractions.GroupBy(x => x.SourceFileName);
                     foreach (IGrouping<string, Extraction> group in grouping)
                     {
@@ -63,7 +62,6 @@ namespace Lignator
                         {
                             string fileName = !string.IsNullOrEmpty(group.Key) ? group.Key : "lignator";
                             string path = $"{options.Output}/{fileName}.{options.Extension}";
-                            fileLocations.Add(path);
 
                             int seed = 0;
                             lock (this.randomLock)
@@ -72,7 +70,7 @@ namespace Lignator
                             }
                             Random taskRandom = new Random(seed);
 
-                            using (IFileSink fileSink = this.fileSink.Start(path, options.MultiLine))
+                            using (IFileSink fileSink = this.fileSink.Start(path, options.MultiLine, options.Clean))
                             {
                                 if (head != null) fileSink.Sink(this.transformer.Transform(head.Template, head.Tokens, taskRandom, variables));
 
@@ -87,11 +85,6 @@ namespace Lignator
                                 }
 
                                 if (tail != null) fileSink.Sink(this.transformer.Transform(tail.Template, tail.Tokens, taskRandom, variables));
-                            }
-
-                            if (options.Clean)
-                            {
-                                this.fileSink.DeleteFile(path);
                             }
                         }));
                     }

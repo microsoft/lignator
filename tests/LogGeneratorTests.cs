@@ -33,7 +33,7 @@ namespace Lignator.Tests
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer.Object, fileSink.Object, logger.Object);
             string template = "Hello %{randomitem(world,universe)}%";
@@ -68,7 +68,7 @@ namespace Lignator.Tests
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer.Object, fileSink.Object, logger.Object);
             string template = "Hello %{randomitem(world,universe)}%";
@@ -107,7 +107,7 @@ namespace Lignator.Tests
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer.Object, fileSink.Object, logger.Object);
 
@@ -146,7 +146,7 @@ namespace Lignator.Tests
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer.Object, fileSink.Object, logger.Object);
 
@@ -187,7 +187,7 @@ namespace Lignator.Tests
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer.Object, fileSink.Object, logger.Object);
             string template = "Hello %{randomitem(world,universe)}%";
@@ -224,7 +224,7 @@ namespace Lignator.Tests
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer.Object, fileSink.Object, logger.Object);
             string template = "Hello %{randomitem(world,universe)}%";
@@ -239,7 +239,7 @@ namespace Lignator.Tests
             await generator.Generate(options);
 
             // Assert
-            fileSink.Verify(o => o.Start(It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(1));
+            fileSink.Verify(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Exactly(1));
         }
 
         [Fact]
@@ -264,7 +264,7 @@ namespace Lignator.Tests
             ITokenTransformer transformer = new TokenTransformer(new Mock<ILogger<TokenTransformer>>().Object);
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
             IFileSink instance = fileSink.Object;
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(instance);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(instance);
 
             ILogGenerator generator = new LogGenerator(extractor.Object, transformer, instance, logger.Object);
 
@@ -308,7 +308,7 @@ namespace Lignator.Tests
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             ITokenTransformer transformer = new TokenTransformer(new Mock<ILogger<TokenTransformer>>().Object);
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
             MockSequence sequence = new MockSequence();
             fileSink.InSequence(sequence).Setup(o => o.Sink("Say Hello!"));
             fileSink.InSequence(sequence).Setup(o => o.Sink(It.Is<string>(s => s == "Hello world" || s == "Hello universe")));
@@ -357,7 +357,7 @@ namespace Lignator.Tests
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             ITokenTransformer transformer = new TokenTransformer(new Mock<ILogger<TokenTransformer>>().Object);
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
             MockSequence sequence = new MockSequence();
             fileSink.InSequence(sequence).Setup(o => o.Sink(It.Is<string>(s => s == "Hello world" || s == "Hello universe")));
             fileSink.InSequence(sequence).Setup(o => o.Sink("Say Hello!"));
@@ -408,7 +408,7 @@ namespace Lignator.Tests
             ITokenTransformer transformer = new TokenTransformer(new Mock<ILogger<TokenTransformer>>().Object);
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
             IFileSink instance = fileSink.Object;
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(instance);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(instance);
             MockSequence sequence = new MockSequence();
             fileSink.InSequence(sequence).Setup(o => o.Sink("Say Hello!"));
             fileSink.InSequence(sequence).Setup(o => o.Sink(It.Is<string>(s => s == "Hello world" || s == "Hello universe")));
@@ -461,7 +461,7 @@ namespace Lignator.Tests
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             ITokenTransformer transformer = new TokenTransformer(new Mock<ILogger<TokenTransformer>>().Object);
             Mock<IFileSink> fileSink = new Mock<IFileSink>();
-            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>())).Returns(fileSink.Object);
+            fileSink.Setup(o => o.Start(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(fileSink.Object);
             MockSequence sequence = new MockSequence();
             fileSink.InSequence(sequence).Setup(o => o.Sink(It.Is<string>(s => s == "Head: Hi" || s == "Head: Hello")));
             fileSink.InSequence(sequence).Setup(o => o.Sink(It.Is<string>(s => s == "Hello world" || s == "Hello universe")));

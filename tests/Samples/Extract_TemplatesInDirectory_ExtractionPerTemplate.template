@@ -1,2 +1,2 @@
-Uuid: %{uuid}%
-Timestamp %{utcnow()}%
+Uuid: ${uuid}
+Timestamp ${utcnow()}

@@ -25,7 +25,7 @@ namespace Lignator.Tests
             ITokenExtractor tokenExtractor = new TokenExtractor(mapper, extractionLogger.Object);
 
             // Act
-            List<Extraction> extractions = await tokenExtractor.Extract("I am a log for %{uuid}%");
+            List<Extraction> extractions = await tokenExtractor.Extract("I am a log for ${uuid}");
 
             // Assert
             Extraction extraction = extractions.First();
@@ -44,7 +44,7 @@ namespace Lignator.Tests
             ITokenExtractor tokenExtractor = new TokenExtractor(mapper, extractionLogger.Object);
 
             // Act
-            List<Extraction> extractions = await tokenExtractor.Extract("I am a log for %{uuid}% about %{uuid}%");
+            List<Extraction> extractions = await tokenExtractor.Extract("I am a log for ${uuid} about ${uuid}");
 
             // Assert
             Extraction extraction = extractions.First();
@@ -65,7 +65,7 @@ namespace Lignator.Tests
             ITokenExtractor tokenExtractor = new TokenExtractor(mapper, extractionLogger.Object);
 
             // Act
-            List<Extraction> extractions = await tokenExtractor.Extract("{\"Hello\":\"%{randomitem(world,universe)}%\", \"id\": \"%{uuid}%\"}");
+            List<Extraction> extractions = await tokenExtractor.Extract("{\"Hello\":\"${randomitem(world,universe)}\", \"id\": \"${uuid}\"}");
 
             // Assert
             Extraction extraction = extractions.First();
@@ -141,7 +141,7 @@ namespace Lignator.Tests
             ITokenExtractor tokenExtractor = new TokenExtractor(mapper, extractionLogger.Object);
 
             // Act
-            List<Extraction> extractions = await tokenExtractor.Extract("\"Hello\":\"%{uuid}%\"");
+            List<Extraction> extractions = await tokenExtractor.Extract("\"Hello\":\"${uuid}\"");
 
             // Assert
             Assert.Single(extractions);
@@ -159,7 +159,7 @@ namespace Lignator.Tests
             ITokenExtractor tokenExtractor = new TokenExtractor(mapper, extractionLogger.Object);
 
             // Act
-            List<Extraction> extractions = await tokenExtractor.Extract("Hello\n%{uuid}%");
+            List<Extraction> extractions = await tokenExtractor.Extract("Hello\n${uuid}");
 
             // Assert
             Assert.Single(extractions);
@@ -177,7 +177,7 @@ namespace Lignator.Tests
             ITokenExtractor tokenExtractor = new TokenExtractor(mapper, extractionLogger.Object);
 
             // Act
-            List<Extraction> extractions = await tokenExtractor.Extract("{\"Hello\": \"World\", \"id\": \"%{uuid}%\"}");
+            List<Extraction> extractions = await tokenExtractor.Extract("{\"Hello\": \"World\", \"id\": \"${uuid}\"}");
 
             // Assert
             Assert.Single(extractions);

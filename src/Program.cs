@@ -125,6 +125,18 @@ namespace Lignator
                     () => configuration.GetValue<bool>("no_banner"),
                     description: "Hide the ascii banner");
 
+            string tokenOpening = configuration.GetValue<string>("token_opening", "${");
+            Option<string> tokenOpeningOption = new Option<string>(
+                    new string[] { "--token-opening" },
+                    () => tokenOpening,
+                    description: "The identifier used to show the start of a token or expression");
+
+            string tokenClosing = configuration.GetValue<string>("token_closing", "}");
+            Option<string> tokenClosingOption = new Option<string>(
+                    new string[] { "--token-closing" },
+                    () => tokenClosing,
+                    description: "The identifier used to show the end of a token or expression");
+
             RootCommand command = new RootCommand
             {
                 template,
@@ -139,7 +151,9 @@ namespace Lignator
                 headOption,
                 tailOption,
                 variablesOption,
-                nobannerOption
+                nobannerOption,
+                tokenOpeningOption,
+                tokenClosingOption
             };
 
             command.Handler = CommandHandler.Create<Options>(services.GetService<ILogGenerator>().Generate);

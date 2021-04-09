@@ -48,15 +48,16 @@ namespace Lignator
                 extractions.Add(new Extraction { UnProcessedTemplate = template });
             }
 
+            string escapedTokenOpening = tokenOpening.Replace("{", "{{");
+            string escapedTokenClosing = tokenClosing.Replace("}", "}}");
+
             foreach (Extraction extraction in extractions)
             {
                 // escape braces for things like json
                 extraction.UnProcessedTemplate = extraction.UnProcessedTemplate.Replace("{", "{{");
                 extraction.UnProcessedTemplate = extraction.UnProcessedTemplate.Replace("}", "}}");
-                tokenOpening = tokenOpening.Replace("{", "{{");
-                tokenClosing = tokenClosing.Replace("}", "}}");
 
-                MatchCollection matches = Regex.Matches(extraction.UnProcessedTemplate, $@"\{tokenOpening}(.*?)\{tokenClosing}");
+                MatchCollection matches = Regex.Matches(extraction.UnProcessedTemplate, $@"\{escapedTokenOpening}(.*?)\{escapedTokenClosing}");
 
                 extraction.Tokens = new List<Token>();
                 extraction.Template = extraction.UnProcessedTemplate;
@@ -64,7 +65,7 @@ namespace Lignator
                 for (int n = 0; n < matches.Count; n++)
                 {
                     extraction.Template = extraction.Template.ReplaceFirst(matches[n].Value, "{" + n + "}");
-                    string rawToken = matches[n].Value.Substring(tokenOpening.Length, matches[n].Value.Length - (tokenOpening.Length + tokenClosing.Length));
+                    string rawToken = matches[n].Value.Substring(escapedTokenOpening.Length, matches[n].Value.Length - (escapedTokenOpening.Length + escapedTokenClosing.Length));
                     extraction.Tokens.Add(await this.mapper.MapToTokenAsync(rawToken));
                 }
                 this.logger.LogTrace($"{matches.Count} tokens extracted from template");

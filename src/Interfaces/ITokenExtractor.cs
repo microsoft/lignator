@@ -9,6 +9,6 @@ namespace Lignator.Interfaces
 {
     public interface ITokenExtractor
     {
-        Task<List<Extraction>> Extract(string template, bool multiLine = false);
+        Task<List<Extraction>> Extract(string template, bool multiLine = false, string tokenOpening = "${", string tokenClosing = "}");
     }
 }

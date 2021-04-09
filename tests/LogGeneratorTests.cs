@@ -28,7 +28,7 @@ namespace Lignator.Tests
                         }
                     };
 
-            extractor.Setup(o => o.Extract(It.IsAny<string>(), false)).ReturnsAsync(new List<Extraction> { extraction });
+            extractor.Setup(o => o.Extract(It.IsAny<string>(), false, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<Extraction> { extraction });
 
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -46,7 +46,7 @@ namespace Lignator.Tests
             await generator.Generate(options);
 
             // Assert
-            extractor.Verify(o => o.Extract(template, false));
+            extractor.Verify(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Lignator.Tests
                         }
                     };
 
-            extractor.Setup(o => o.Extract(It.IsAny<string>(), false)).ReturnsAsync(new List<Extraction> { extraction });
+            extractor.Setup(o => o.Extract(It.IsAny<string>(), false, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<Extraction> { extraction });
 
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -99,9 +99,9 @@ namespace Lignator.Tests
                     };
 
             string template = "Hello %{randomitem(world,universe)}%";
-            extractor.Setup(o => o.Extract(template, false))
+            extractor.Setup(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { extraction });
-            extractor.Setup(o => o.Extract(null, false))
+            extractor.Setup(o => o.Extract(null, false, It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<List<Extraction>>(default);
 
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
@@ -138,9 +138,9 @@ namespace Lignator.Tests
                     };
 
             string template = "Hello %{randomitem(world,universe)}%";
-            extractor.Setup(o => o.Extract(template, false))
+            extractor.Setup(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { extraction });
-            extractor.Setup(o => o.Extract(null, false))
+            extractor.Setup(o => o.Extract(null, false, It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<List<Extraction>>(default);
 
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
@@ -182,7 +182,7 @@ namespace Lignator.Tests
                         }
                     };
 
-            extractor.Setup(o => o.Extract(It.IsAny<string>(), false)).ReturnsAsync(new List<Extraction> { extraction });
+            extractor.Setup(o => o.Extract(It.IsAny<string>(), false, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<Extraction> { extraction });
 
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -202,7 +202,7 @@ namespace Lignator.Tests
             await generator.Generate(options);
 
             // Assert
-            extractor.Verify(o => o.Extract(template, false), Times.Exactly(1));
+            extractor.Verify(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(1));
         }
 
         [Fact]
@@ -219,7 +219,7 @@ namespace Lignator.Tests
                         }
                     };
 
-            extractor.Setup(o => o.Extract(It.IsAny<string>(), false)).ReturnsAsync(new List<Extraction> { extraction });
+            extractor.Setup(o => o.Extract(It.IsAny<string>(), false, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<Extraction> { extraction });
 
             Mock<ITokenTransformer> transformer = new Mock<ITokenTransformer>();
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -258,7 +258,7 @@ namespace Lignator.Tests
                 SourceFileName = sourceFile
             };
 
-            extractor.Setup(o => o.Extract(It.IsAny<string>(), true)).ReturnsAsync(new List<Extraction> { extraction });
+            extractor.Setup(o => o.Extract(It.IsAny<string>(), true, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<Extraction> { extraction });
 
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
             ITokenTransformer transformer = new TokenTransformer(new Mock<ILogger<TokenTransformer>>().Object);
@@ -298,11 +298,11 @@ namespace Lignator.Tests
 
             string template = "Hello %{randomitem(world,universe)}%";
             string head = "Say Hello!";
-            extractor.Setup(o => o.Extract(template, false))
+            extractor.Setup(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { extraction });
-            extractor.Setup(o => o.Extract(head, false))
+            extractor.Setup(o => o.Extract(head, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { new Extraction { Template = head, Tokens = new List<Token>() }});
-            extractor.Setup(o => o.Extract(null, false))
+            extractor.Setup(o => o.Extract(null, false, It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<List<Extraction>>(default);
 
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -347,11 +347,11 @@ namespace Lignator.Tests
 
             string template = "Hello %{randomitem(world,universe)}%";
             string tail = "Say Hello!";
-            extractor.Setup(o => o.Extract(template, false))
+            extractor.Setup(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { extraction });
-            extractor.Setup(o => o.Extract(tail, false))
+            extractor.Setup(o => o.Extract(tail, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { new Extraction { Template = tail, Tokens = new List<Token>() }});
-            extractor.Setup(o => o.Extract(null, false))
+            extractor.Setup(o => o.Extract(null, false, It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<List<Extraction>>(default);
 
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -397,11 +397,11 @@ namespace Lignator.Tests
             string template = "Hello %{randomitem(world,universe)}%";
             string head = "Say Hello!";
             string tail = "Say Bye!";
-            extractor.Setup(o => o.Extract(template, false))
+            extractor.Setup(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { extraction });
-            extractor.Setup(o => o.Extract(head, false))
+            extractor.Setup(o => o.Extract(head, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { new Extraction { Template = head, Tokens = new List<Token>() }});
-            extractor.Setup(o => o.Extract(tail, false))
+            extractor.Setup(o => o.Extract(tail, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { new Extraction { Template = tail, Tokens = new List<Token>() }});
 
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();
@@ -451,11 +451,11 @@ namespace Lignator.Tests
             string template = "Hello %{randomitem(world,universe)}%";
             string head = "Head: {0}";
             string tail = "Tail: {0}";
-            extractor.Setup(o => o.Extract(template, false))
+            extractor.Setup(o => o.Extract(template, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { extraction });
-            extractor.Setup(o => o.Extract(head, false))
+            extractor.Setup(o => o.Extract(head, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { new Extraction { Template = head, Tokens = new List<Token> { new RandomItemToken { Items = new [] { "Hi", "Hello" }}} }});
-            extractor.Setup(o => o.Extract(tail, false))
+            extractor.Setup(o => o.Extract(tail, false, It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new List<Extraction> { new Extraction { Template = tail, Tokens = new List<Token> { new RandomItemToken { Items = new [] { "Bye", "Goodbye" }}} }});
 
             Mock<ILogger<LogGenerator>> logger = new Mock<ILogger<LogGenerator>>();

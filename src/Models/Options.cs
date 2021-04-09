@@ -15,7 +15,8 @@ namespace Lignator.Models
         public string Head { get; set;}
         public string Tail { get; set; }
         public string[] Variable { get; set; }
-
         public bool NoBanner { get; set; }
+        public string TokenOpening { get; set; } = "${";
+        public string TokenClosing { get; set; } = "}";
     }
 }

@@ -1,2 +1,2 @@
-Hello %{randomitem(world,universe)}%
-Id: %{uuid}%
+Hello ${randomitem(world,universe)}
+Id: ${uuid}

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,9 +40,9 @@ namespace Lignator
 
             this.WriteLineToConsole("Start token extraction", ConsoleColor.Green);
 
-            Extraction head = await this.GetFirstExtraction(options.Head, options.MultiLine);
-            List<Extraction> extractions = await this.extractor.Extract(options.Template, options.MultiLine);
-            Extraction tail = await this.GetFirstExtraction(options.Tail, options.MultiLine);
+            Extraction head = await this.GetFirstExtraction(options.Head, options.MultiLine, tokenOpening: options.TokenOpening, tokenClosing: options.TokenClosing);
+            List<Extraction> extractions = await this.extractor.Extract(options.Template, options.MultiLine, tokenOpening: options.TokenOpening, tokenClosing: options.TokenClosing);
+            Extraction tail = await this.GetFirstExtraction(options.Tail, options.MultiLine, tokenOpening: options.TokenOpening, tokenClosing: options.TokenClosing);
 
             this.WriteLineToConsole("Finished token extraction", ConsoleColor.Green);
 
@@ -97,10 +96,10 @@ namespace Lignator
             this.WriteLineToConsole("Finished generation", ConsoleColor.Green);
         }
 
-        private async Task<Extraction> GetFirstExtraction(string template, bool multiLine)
+        private async Task<Extraction> GetFirstExtraction(string template, bool multiLine, string tokenOpening = "${", string tokenClosing = "}")
         {
             if(string.IsNullOrWhiteSpace(template)) return null;
-            List<Extraction> extractions = await this.extractor.Extract(template, multiLine);
+            List<Extraction> extractions = await this.extractor.Extract(template, multiLine, tokenOpening, tokenClosing);
             return extractions != null && extractions.Any() ? extractions.FirstOrDefault() : null;
         }
         private void WriteLineToConsole(string line, ConsoleColor text, bool log = true)
@@ -113,7 +112,7 @@ namespace Lignator
             Console.ForegroundColor = currentText;
         }
 
-        private async Task<IDictionary<string, Extraction>> ExtractVariables(string[] variables)
+        private async Task<IDictionary<string, Extraction>> ExtractVariables(string[] variables, string tokenOpening = "${", string tokenClosing = "}")
         {
             if (variables == null || variables.Length < 1) return null;
 
@@ -125,7 +124,7 @@ namespace Lignator
                 string name = parts[0];
                 string rawTemplate = parts[1];
 
-                Extraction extraction = await this.GetFirstExtraction(rawTemplate, false);
+                Extraction extraction = await this.GetFirstExtraction(rawTemplate, false, tokenOpening, tokenClosing);
                 extracted.Add(name, extraction);
             }
             return extracted;

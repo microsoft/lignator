@@ -18,7 +18,6 @@ namespace Lignator
         private bool disposed = false;
         private readonly string path;
         private readonly bool clean;
-        private QueueSink queueSink;
 
         public QueueSink() { }
         private QueueSink(string path, bool multiline = false, bool clean = false)

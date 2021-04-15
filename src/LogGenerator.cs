@@ -15,16 +15,16 @@ namespace Lignator
     {
         private readonly ITokenExtractor extractor;
         private readonly ITokenTransformer transformer;
-        private readonly IFileSink fileSink;
+        private readonly ISink sink;
         private readonly ILogger<LogGenerator> logger;
         private readonly Random random;
         private Object randomLock;
 
-        public LogGenerator(ITokenExtractor extractor, ITokenTransformer transformer, IFileSink fileSink, ILogger<LogGenerator> logger)
+        public LogGenerator(ITokenExtractor extractor, ITokenTransformer transformer, ISink sink, ILogger<LogGenerator> logger)
         {
             this.extractor = extractor;
             this.transformer = transformer;
-            this.fileSink = fileSink;
+            this.sink = sink;
             this.logger = logger;
             this.random = new Random();
             this.randomLock = new Object();
@@ -34,21 +34,21 @@ namespace Lignator
         {
             if(!options.NoBanner) this.PrintBanner();
 
-            this.WriteLineToConsole("Extracting Variables", ConsoleColor.Green);
+            this.logger.LogInformation("Extracting Variables");
             IDictionary<string, Extraction> variables = await this.ExtractVariables(options.Variable);
-            this.WriteLineToConsole("Variables Extracted", ConsoleColor.Green);
+            this.logger.LogInformation("Variables Extracted");
 
-            this.WriteLineToConsole("Start token extraction", ConsoleColor.Green);
+            this.logger.LogInformation("Start token extraction");
 
             Extraction head = await this.GetFirstExtraction(options.Head, options.MultiLine, tokenOpening: options.TokenOpening, tokenClosing: options.TokenClosing);
             List<Extraction> extractions = await this.extractor.Extract(options.Template, options.MultiLine, tokenOpening: options.TokenOpening, tokenClosing: options.TokenClosing);
             Extraction tail = await this.GetFirstExtraction(options.Tail, options.MultiLine, tokenOpening: options.TokenOpening, tokenClosing: options.TokenClosing);
 
-            this.WriteLineToConsole("Finished token extraction", ConsoleColor.Green);
+            this.logger.LogInformation("Finished token extraction");
 
-            if (options.Infinite) this.WriteLineToConsole("infinite flag == true, will run until the process is stopped", ConsoleColor.Yellow);
+            if (options.Infinite) this.logger.LogInformation("infinite flag == true, will run until the process is stopped");
 
-            this.WriteLineToConsole("Start generation", ConsoleColor.Green);
+            this.logger.LogInformation("Start generation");
             do
             {
                 List<Task> tasks = new List<Task>();
@@ -57,10 +57,10 @@ namespace Lignator
                     IEnumerable<IGrouping<string, Extraction>> grouping = extractions.GroupBy(x => x.SourceFileName);
                     foreach (IGrouping<string, Extraction> group in grouping)
                     {
-                        tasks.Add(Task.Run(() =>
+                        var task = Task.Run(() =>
                         {
                             string fileName = !string.IsNullOrEmpty(group.Key) ? group.Key : "lignator";
-                            string path = $"{options.Output}/{fileName}.{options.Extension}";
+                            string path = options.Output == "/dev/stdout" ? options.Output : $"{options.Output}/{fileName}.{options.Extension}";
 
                             int seed = 0;
                             lock (this.randomLock)
@@ -69,23 +69,32 @@ namespace Lignator
                             }
                             Random taskRandom = new Random(seed);
 
-                            using (IFileSink fileSink = this.fileSink.Start(path, options.MultiLine, options.Clean))
+                            using (ISink sink = this.sink.Start(path, options.MultiLine, options.Clean))
                             {
-                                if (head != null) fileSink.Sink(this.transformer.Transform(head.Template, head.Tokens, taskRandom, variables));
+                                if (head != null) sink.Sink(this.transformer.Transform(head.Template, head.Tokens, taskRandom, variables));
 
-                                this.WriteLineToConsole($"Starting run {n + 1} of {options.Runs}", ConsoleColor.Green);
+                                this.logger.LogInformation($"Starting run {n + 1} of {options.Runs}");
 
                                 List<Extraction> subGroup = group.ToList();
                                 for (int l = 0; l < options.Logs; l++)
                                 {
                                     Extraction extraction = subGroup[taskRandom.Next(0, subGroup.Count())];
                                     string transformed = this.transformer.Transform(extraction.Template, extraction.Tokens, taskRandom, variables);
-                                    fileSink.Sink(transformed);
+                                    sink.Sink(transformed);
                                 }
 
-                                if (tail != null) fileSink.Sink(this.transformer.Transform(tail.Template, tail.Tokens, taskRandom, variables));
+                                if (tail != null) sink.Sink(this.transformer.Transform(tail.Template, tail.Tokens, taskRandom, variables));
                             }
-                        }));
+                        });
+
+                        if(options.Output == "/dev/stdout")
+                        {
+                            await task;
+                        }
+                        else
+                        {
+                            tasks.Add(task);
+                        }
                     }
 
                     await Task.WhenAll(tasks);
@@ -93,7 +102,7 @@ namespace Lignator
             }
             while (options.Infinite);
 
-            this.WriteLineToConsole("Finished generation", ConsoleColor.Green);
+            this.logger.LogInformation("Finished generation");
         }
 
         private async Task<Extraction> GetFirstExtraction(string template, bool multiLine, string tokenOpening = "${", string tokenClosing = "}")
@@ -101,15 +110,6 @@ namespace Lignator
             if(string.IsNullOrWhiteSpace(template)) return null;
             List<Extraction> extractions = await this.extractor.Extract(template, multiLine, tokenOpening, tokenClosing);
             return extractions != null && extractions.Any() ? extractions.FirstOrDefault() : null;
-        }
-        private void WriteLineToConsole(string line, ConsoleColor text, bool log = true)
-        {
-            this.logger.LogTrace(line);
-
-            ConsoleColor currentText = Console.ForegroundColor;
-            Console.ForegroundColor = text;
-            Console.WriteLine(line);
-            Console.ForegroundColor = currentText;
         }
 
         private async Task<IDictionary<string, Extraction>> ExtractVariables(string[] variables, string tokenOpening = "${", string tokenClosing = "}")

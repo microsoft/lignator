@@ -14,151 +14,67 @@ namespace Lignator
 {
     class Program
     {
+        static IConfiguration configuration;
         static int Main(string[] args)
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+            configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables("lignator_")
                 .Build();
 
+            LogLevel logLevel = configuration.GetValue<string>("log_level", "Information") == "Information" ? LogLevel.Information : LogLevel.None;
             ServiceProvider services = new ServiceCollection()
                 .AddLogging(c =>
                 {
                     c.AddConfiguration(configuration);
-                    c.AddConsole();
                     c.AddEventSourceLogger();
+                    c.AddFilter("Lignator.LogGenerator", logLevel);
+                    c.AddFilter("Default", LogLevel.Information);
+                    c.AddFilter("Microsoft", LogLevel.Warning);
+                    c.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Information);
+                    c.AddConsole();
                 })
                 .AddTransient<ITokenMapper, TokenMapper>()
                 .AddTransient<ITokenExtractor, TokenExtractor>()
                 .AddTransient<ITokenTransformer, TokenTransformer>()
                 .AddTransient<ILogGenerator, LogGenerator>()
-                .AddTransient<IFileSink, FileSink>()
+                .AddTransient<ISink, QueueSink>()
                 .BuildServiceProvider();
-
-            string tempalteDefault = configuration.GetValue<string>("template");
-            Option<string> template;
-
-            if (!string.IsNullOrWhiteSpace(tempalteDefault))
-            {
-                template = new Option<string>(
-                    new string[] { "--template", "-t" },
-                    () => tempalteDefault,
-                    "The template to be used for each log line or a file which contains a template per line which will be randomly selected for use")
-                { IsRequired = true };
-            }
-            else
-            {
-                template = new Option<string>(
-                    new string[] { "--template", "-t" },
-                    "The template to be used for each log line")
-                { IsRequired = true };
-            }
-
-            int runsDefault = configuration.GetValue<int>("runs");
-            Option<int> runs = new Option<int>(
-                    new string[] { "--runs", "-r" },
-                    () => runsDefault == 0 ? 1 : runsDefault,
-                    description: "How many runs?");
-
-            string outputDefault = configuration.GetValue<string>("output");
-            Option<string> outputOption = new Option<string>(
-                    new string[] { "--output", "-o" },
-                    () => string.IsNullOrWhiteSpace(outputDefault) ? "logs" : outputDefault,
-                    description: "The directory you would like the logs to be put");
-
-            int logsDefault = configuration.GetValue<int>("logs");
-            Option<int> logs = new Option<int>(
-                    new string[] { "--logs", "-l" },
-                    () => logsDefault == 0 ? 1 : logsDefault,
-                    description: "How many logs per run?");
-
-            int threadsDefault = configuration.GetValue<int>("threads");
-            Option<int> threadsOption = new Option<int>(
-                    new string[] { "--threads" },
-                    () => threadsDefault == 0 ? 1 : threadsDefault,
-                    description: "How many threads per run?");
-
-            Option<bool> infiniteOption = new Option<bool>(
-                    new string[] { "--infinite", "-i" },
-                    () => configuration.GetValue<bool>("infinite"),
-                    description: "Run continuously?");
-
-            Option<bool> cleanOption = new Option<bool>(
-                    new string[] { "--clean", "-c" },
-                    () => configuration.GetValue<bool>("clean"),
-                    description: "Delete the files at the end of each run?");
-
-            string extensionDefault = configuration.GetValue<string>("extension");
-            Option<string> outputExtensionOption = new Option<string>(
-                    new string[] { "--extension", "-e" },
-                    () => string.IsNullOrWhiteSpace(extensionDefault) ? "log" : extensionDefault,
-                    description: "The file extension used when generating the file outputs");
-
-            Option<bool> multiLineOption = new Option<bool>(
-                    new string[] { "--multi-line", "-m" },
-                    () => configuration.GetValue<bool>("multiline"),
-                    description: "Used with either file or directory input to use the whole file as a single input");
-
-            string headDefault = configuration.GetValue<string>("head");
-            Option<string> headOption = new Option<string>(
-                    new string[] { "--head", "-H" },
-                    () => headDefault,
-                    description: "Add content to the start of the file");
-
-            string tailDefault = configuration.GetValue<string>("tail");
-            Option<string> tailOption = new Option<string>(
-                    new string[] { "--tail", "-T" },
-                    () => tailDefault,
-                    description: "Add content to the end of the file");
-
 
             string variablesDefault = configuration.GetValue<string>("variables");
             Option<string[]> variablesOption = new Option<string[]>(
                     new string[] { "--variable", "-V" },
                     () => string.IsNullOrWhiteSpace(variablesDefault) ? null : variablesDefault.Split(";"), // env variable would be equal to "myid=%{uuid}%;currenttimestamp=%{utcnow()}%"
-                    description: "Key value pairs for variable declaration, they can also be templates"
-            );
-
-            Option<bool> nobannerOption = new Option<bool>(
-                    new string[] { "--no-banner" },
-                    () => configuration.GetValue<bool>("no_banner"),
-                    description: "Hide the ascii banner");
-
-            string tokenOpening = configuration.GetValue<string>("token_opening", "${");
-            Option<string> tokenOpeningOption = new Option<string>(
-                    new string[] { "--token-opening" },
-                    () => tokenOpening,
-                    description: "The identifier used to show the start of a token or expression");
-
-            string tokenClosing = configuration.GetValue<string>("token_closing", "}");
-            Option<string> tokenClosingOption = new Option<string>(
-                    new string[] { "--token-closing" },
-                    () => tokenClosing,
-                    description: "The identifier used to show the end of a token or expression");
+                    description: "Key value pairs for variable declaration, they can also be templates");
 
             RootCommand command = new RootCommand
             {
-                template,
-                runs,
-                outputOption,
-                logs,
-                threadsOption,
-                infiniteOption,
-                cleanOption,
-                outputExtensionOption,
-                multiLineOption,
-                headOption,
-                tailOption,
+                GetOption<string>("template", null, new string[] { "--template", "-t" }, "The template to be used for each log line or a file which contains a template per line which will be randomly selected for use"),
+                GetOption<int>("runs", 1, new string[] { "--runs", "-r"}, "How many runs?"),
+                GetOption<string>("output", "logs", new string[] { "--output", "-o" }, "The directory you would like the logs to be put, can also be '/dev/stdout"),
+                GetOption<int>("logs", 1, new string[] { "--logs", "-l" }, "How many logs per run?"),
+                GetOption<int>("threads", 1, new string[] { "--threads" }, "How many threads per run?"),
+                GetOption<bool>("infinite", false, new string[] { "--infinite", "-i" }, "Run continuously?"),
+                GetOption<bool>("clean", false, new string[] { "--clean", "-c" }, "Delete the files at the end of each run?"),
+                GetOption<string>("extension", "log", new string[] { "--extension", "-e" }, "The file extension used when generating the file outputs"),
+                GetOption<bool>("multiline", false, new string[] { "--multi-line", "-m" }, "Used with either file or directory input to use the whole file as a single input"),
+                GetOption<string>("head", null, new string[] { "--head", "-H" }, "Add content to the start of the file"),
+                GetOption<string>("tail", null, new string[] { "--tail", "-T" }, "Add content to the end of the file"),
                 variablesOption,
-                nobannerOption,
-                tokenOpeningOption,
-                tokenClosingOption
+                GetOption<bool>("no_banner", false, new string[] { "--no-banner" }, "Hide the ascii banner"),
+                GetOption<string>("token_opening", "${", new string[] { "--token-opening" }, "The identifier used to show the start of a token or expression"),
+                GetOption<string>("token_closing", "}", new string[] { "--token-closing" }, "The identifier used to show the end of a token or expression")
             };
 
             command.Handler = CommandHandler.Create<Options>(services.GetService<ILogGenerator>().Generate);
 
             return command.InvokeAsync(args).Result;
+        }
+
+        private static Option<T> GetOption<T>(string environmentName, T defaultValue, string[] aliases, string description)
+        {
+            return defaultValue != null
+                ? new Option<T>(aliases, () => configuration.GetValue<T>(environmentName, defaultValue), description)
+                : new Option<T>(aliases, description);
         }
     }
 }

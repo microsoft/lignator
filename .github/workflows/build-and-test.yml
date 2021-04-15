@@ -20,9 +20,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore -o test
+      run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - run: dotnet publish -o test
     - name: binary Integration tests
       run: ./integration-tests/runner.sh ./test/lignator
     - run: gh auth login --with-token <<< "${{github.TOKEN}}"

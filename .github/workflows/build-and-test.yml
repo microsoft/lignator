@@ -23,7 +23,7 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - run: dotnet publish -o test
+    - run: dotnet publish ./src/Lignator.csproj -r linux-x64 -p:PublishSingleFile=true --self-contained true -c Release -o ./test
     - name: binary Integration tests
       run: ./integration-tests/runner.sh ./test/lignator
     - run: gh auth login --with-token <<< "${{github.TOKEN}}"

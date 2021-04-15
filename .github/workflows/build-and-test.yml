@@ -20,6 +20,17 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore -o test
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: binary Integration tests
+      run: ./integration-tests/runner.sh ./test/lignator
+    - run: gh auth login --with-token <<< "${{github.TOKEN}}"
+    - name: Test results
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+          pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") && \
+          comment=$(cat ./test-results.md) && \
+          gh pr comment "$pull_number" \
+          --body "$comment" \
+          --repo "${{github.SERVER_URL}}/${{github.REPOSITORY}}"

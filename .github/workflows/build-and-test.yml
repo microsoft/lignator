@@ -23,3 +23,15 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - run: dotnet publish ./src/Lignator.csproj -r linux-x64 -p:PublishSingleFile=true --self-contained true -c Release -o ./test
+    - name: binary Integration tests
+      run: ./integration-tests/runner.sh ./test/lignator
+    - run: gh auth login --with-token <<< "${{github.TOKEN}}"
+    - name: Test results
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+          pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH") && \
+          comment=$(cat ./test-results.md) && \
+          gh pr comment "$pull_number" \
+          --body "$comment" \
+          --repo "${{github.SERVER_URL}}/${{github.REPOSITORY}}"

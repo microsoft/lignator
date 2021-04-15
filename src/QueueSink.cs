@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ using Lignator.Interfaces;
 
 namespace Lignator
 {
-    public class FileSink : IFileSink
+    public class QueueSink : ISink
     {
         private ConcurrentQueue<string> queue;
         private Task sinker;
@@ -18,21 +19,26 @@ namespace Lignator
         private readonly string path;
         private readonly bool clean;
 
-        public FileSink() {}
-        private FileSink(string path, bool multiline = false, bool clean = false)
+        public QueueSink() { }
+        private QueueSink(string path, bool multiline = false, bool clean = false)
         {
             this.path = path;
             this.clean = clean;
-            string directory = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory))
+
+            if (path != "/dev/stdout")
             {
-                Directory.CreateDirectory(directory);
+                string directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
             }
 
             this.queue = new ConcurrentQueue<string>();
             this.sinker = Task.Run(async () =>
             {
-                using (StreamWriter writer = new StreamWriter(path, true))
+                Stream stream = path == "/dev/stdout" ? Console.OpenStandardOutput() : new FileStream(path, FileMode.Append);
+                using (StreamWriter writer = new StreamWriter(stream))
                 {
                     while (!this.disposed)
                     {
@@ -48,9 +54,9 @@ namespace Lignator
             });
         }
 
-        public IFileSink Start(string path, bool multiline = false, bool clean = false)
+        public ISink Start(string path, bool multiline = false, bool clean = false)
         {
-            return new FileSink(path, multiline, clean);
+            return new QueueSink(path, multiline, clean);
         }
 
         public void Sink(string content)

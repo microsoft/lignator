@@ -86,24 +86,6 @@ namespace Lignator.Tests
         }
 
         [Fact]
-        public async Task MapToToken_linefromfile_LineFromFileToken()
-        {
-
-            // Arrange
-            Mock<ILogger<TokenMapper>> logger = new Mock<ILogger<TokenMapper>>();
-            ITokenMapper mapper = new TokenMapper(logger.Object);
-            string path = @"Samples/accesslog_levels.txt";
-
-            // Act
-            Token token = await mapper.MapToTokenAsync("linefromfile(" + path + ")");
-
-            // Assert
-            LineFromFileToken lineFromFileToken = Assert.IsAssignableFrom<LineFromFileToken>(token);
-            Assert.Equal(new[] { "emerg", "alert", "crit", "error", "warn", "notice" }, lineFromFileToken.Items);
-
-        }
-
-        [Fact]
         public async Task MapToToken_variable_VariableToken()
         {
             // Arrange

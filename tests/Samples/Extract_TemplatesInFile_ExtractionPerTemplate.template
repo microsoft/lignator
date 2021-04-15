@@ -1,2 +1,0 @@
-Hello ${randomitem(world,universe)}
-Id: ${uuid}

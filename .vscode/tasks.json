@@ -14,6 +14,18 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build sln",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Lignator.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "publish",
             "command": "dotnet",
             "type": "process",
@@ -37,6 +49,27 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "unit tests",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/Lignator.sln"
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": ["build sln"]
+        },
+        {
+            "label": "integration tests",
+            "command": "${workspaceFolder}/integration-tests/runner.sh",
+            "type": "shell",
+            "args": [
+                "${workspaceFolder}/src/bin/Debug/net5.0/lignator"
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": ["build"]
         }
     ]
 }

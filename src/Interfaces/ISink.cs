@@ -2,13 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Extensions.Logging;
 
 namespace Lignator.Interfaces
 {
-    public interface IFileSink: IDisposable
+    public interface ISink: IDisposable
     {
-        IFileSink Start(string path, bool multiline = false, bool clean = false);
+        ISink Start(string path, bool multiline = false, bool clean = false);
 
         void Sink(string content);
     }

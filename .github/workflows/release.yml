@@ -49,6 +49,8 @@ jobs:
             echo "Compiled binary version $lignatorversion should be ${{ github.event.inputs.version }}"; exit 1
           fi
           exit 0
+    - name: binary Integration tests
+      run: ./integration-tests/runner.sh ./test/lignator
     - name: Publish docker
       run: docker build --build-arg CODE_VERSION=${{ github.event.inputs.version }}  . -t temp/lignator:${{ github.event.inputs.version }}
       working-directory: ./src

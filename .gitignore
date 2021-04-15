@@ -350,3 +350,8 @@ MigrationBackup/
 .ionide/
 
 src/appsettings.Development.json
+
+**/test-results.md
+**/logs/*
+**/testlogs/*
+**/testlogs/*

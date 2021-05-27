@@ -32,8 +32,12 @@
             "args": [
                 "publish",
                 "${workspaceFolder}/src/Lignator.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "-r",
+                "linux-x64",
+                "-p:PublishSingleFile=true",
+                "--self-contained",
+                "-c",
+                "Release"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -66,10 +70,10 @@
             "command": "${workspaceFolder}/integration-tests/runner.sh",
             "type": "shell",
             "args": [
-                "${workspaceFolder}/src/bin/Debug/net5.0/lignator"
+                "${workspaceFolder}/src/bin/Release/net5.0/linux-x64/publish/lignator"
             ],
             "problemMatcher": "$msCompile",
-            "dependsOn": ["build"]
+            "dependsOn": ["publish"]
         }
     ]
 }

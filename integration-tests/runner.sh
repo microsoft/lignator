@@ -11,6 +11,7 @@ export lignator_log_level=None
 ./integration-tests/variable-tests.sh $path_to_lignator
 ./integration-tests/input-tests.sh $path_to_lignator
 ./integration-tests/output-tests.sh $path_to_lignator
+./integration-tests/env-tests.sh $path_to_lignator
 
 export lignator_no_banner=false
 export lignator_log_level=Information

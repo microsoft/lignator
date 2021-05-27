@@ -48,11 +48,10 @@ namespace Lignator
 
             RootCommand command = new RootCommand
             {
-                GetOption<string>("template", null, new string[] { "--template", "-t" }, "The template to be used for each log line or a file which contains a template per line which will be randomly selected for use"),
+                GetOption<string>("template", string.Empty, new string[] { "--template", "-t" }, "The template to be used for each log line or a file which contains a template per line which will be randomly selected for use"),
                 GetOption<int>("runs", 1, new string[] { "--runs", "-r"}, "How many runs?"),
                 GetOption<string>("output", "logs", new string[] { "--output", "-o" }, "The directory you would like the logs to be put, can also be '/dev/stdout"),
                 GetOption<int>("logs", 1, new string[] { "--logs", "-l" }, "How many logs per run?"),
-                GetOption<int>("threads", 1, new string[] { "--threads" }, "How many threads per run?"),
                 GetOption<bool>("infinite", false, new string[] { "--infinite", "-i" }, "Run continuously?"),
                 GetOption<bool>("clean", false, new string[] { "--clean", "-c" }, "Delete the files at the end of each run?"),
                 GetOption<string>("extension", "log", new string[] { "--extension", "-e" }, "The file extension used when generating the file outputs"),

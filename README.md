@@ -285,12 +285,15 @@ $ lignator --variable 'myid=${uuid}' -t 'ID:${variable(myid)} - Yes the ID was: 
 
 # Output
 
-- [inline](#inline)
-- [file](#file)
-- [directory](#directory)
-
 The output will vary depending on the input you provide. By default it will output in a directory called output (it will create this directory if it doesn't exist). If you wish to use a different directory you can change this with the output option detailed below.
 
+## Standard Output
+
+It is possible to output the generated logs to stdout rather than to a file, you can do this like so:
+
+```
+$ lignator -t 'ID: ${uuid}' -o /dev/stdout
+```
 ## Inline
 
 When running lignator inline like so:

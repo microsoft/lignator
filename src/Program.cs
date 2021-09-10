@@ -43,7 +43,7 @@ namespace Lignator
             string variablesDefault = configuration.GetValue<string>("variables");
             Option<string[]> variablesOption = new Option<string[]>(
                     new string[] { "--variable", "-V" },
-                    () => string.IsNullOrWhiteSpace(variablesDefault) ? null : variablesDefault.Split(";"), // env variable would be equal to "myid=%{uuid}%;currenttimestamp=%{utcnow()}%"
+                    () => string.IsNullOrWhiteSpace(variablesDefault) ? null : variablesDefault.Split(";"), // env variable would be equal to "myid=${uuid};currenttimestamp=${utcnow()}"
                     description: "Key value pairs for variable declaration, they can also be templates");
 
             RootCommand command = new RootCommand
@@ -71,9 +71,7 @@ namespace Lignator
 
         private static Option<T> GetOption<T>(string environmentName, T defaultValue, string[] aliases, string description)
         {
-            return defaultValue != null
-                ? new Option<T>(aliases, () => configuration.GetValue<T>(environmentName, defaultValue), description)
-                : new Option<T>(aliases, description);
+            return new Option<T>(aliases, () => configuration.GetValue<T>(environmentName, defaultValue), description);
         }
     }
 }

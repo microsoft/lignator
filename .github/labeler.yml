@@ -1,0 +1,21 @@
+workflows:
+- '.github/workflows/*'
+
+github:
+- any: ['.github/**/*', '!.github/workflows/*']
+
+test:
+- 'tests/**/*'
+- 'integration-tests/**/*'
+
+documentation:
+- '*.md'
+- 'images/**/*'
+
+source:
+- 'src/**/*'
+- 'Lignator.sln'
+- '.gitignore'
+
+environment:
+- .vscode/*
